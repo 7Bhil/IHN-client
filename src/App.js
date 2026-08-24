@@ -4,6 +4,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import Events from './pages/Events';
+import AdminEvents from './pages/AdminEvents';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
@@ -12,6 +14,10 @@ function MainApp() {
     switch (activeTab) {
       case 'home':
         return <Home setActiveTab={setActiveTab} />;
+      case 'events':
+        return <Events />;
+      case 'admin-events':
+        return <AdminEvents />;
       case 'login':
         return <Login setActiveTab={setActiveTab} />;
       default:
