@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, GraduationCap, ArrowRight, Sparkles, Award, BookOpen } from 'lucide-react';
 
-const Home = ({ setActiveTab }) => {
+const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-16 pb-16">
       {/* Hero Section */}
@@ -27,7 +30,7 @@ const Home = ({ setActiveTab }) => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
               <button
-                onClick={() => setActiveTab('events')}
+                onClick={() => navigate('/events')}
                 className="flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-ihn-yellow text-ihn-dark font-extrabold text-base hover:bg-yellow-400 transition-all shadow-xl shadow-ihn-yellow/20 hover:scale-[1.02]"
               >
                 <Calendar className="w-5 h-5 text-ihn-dark" />
@@ -36,7 +39,7 @@ const Home = ({ setActiveTab }) => {
               </button>
 
               <button
-                onClick={() => setActiveTab('formations')}
+                onClick={() => navigate('/formations')}
                 className="flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-base border border-white/20 backdrop-blur-md transition-all hover:scale-[1.02]"
               >
                 <GraduationCap className="w-5 h-5 text-ihn-light-green" />

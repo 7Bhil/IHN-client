@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, Sparkles, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 
-const Login = ({ setActiveTab }) => {
+const Login = () => {
   const { login, seedAdmin } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('admin@ihn.bj');
   const [password, setPassword] = useState('Admin@2026');
   const [error, setError] = useState('');
@@ -19,7 +21,7 @@ const Login = ({ setActiveTab }) => {
 
     try {
       await login(email, password);
-      setActiveTab('dashboard');
+      navigate('/admin/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Identifiants de connexion invalides');
     } finally {

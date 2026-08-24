@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import API from '../services/api';
 import { CreditCard, Phone, CheckCircle2, AlertCircle, ShieldCheck, ArrowRight, DollarSign, History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const Payments = ({ selectedRegistration, onPaymentSuccess }) => {
+const Payments = ({ onPaymentSuccess }) => {
   const { user } = useAuth();
+  const location = useLocation();
+  const selectedRegistration = location.state?.selectedRegistration;
+
   const [provider, setProvider] = useState('MTN');
   const [phone, setPhone] = useState(selectedRegistration?.phone || '97000000');
   const [amount, setAmount] = useState(selectedRegistration?.amount || 35000);

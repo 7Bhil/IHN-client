@@ -1,34 +1,26 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Menu, X, Calendar, GraduationCap, ShieldCheck, Home, Bell } from 'lucide-react';
+import { LogOut, User, Menu, X, Calendar, GraduationCap, ShieldCheck, Home, LayoutDashboard } from 'lucide-react';
 
-const Navbar = ({ activeTab, setActiveTab }) => {
+const Navbar = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { id: 'home', label: 'Accueil', icon: Home, public: true },
-    { id: 'events', label: 'Événements', icon: Calendar, public: true },
-    { id: 'formations', label: 'Formations', icon: GraduationCap, public: true },
-    { id: 'certificates', label: 'Vérifier Attestation', icon: ShieldCheck, public: true },
+    { path: '/', label: 'Accueil', icon: Home },
+    { path: '/events', label: 'Événements', icon: Calendar },
+    { path: '/formations', label: 'Formations', icon: GraduationCap },
+    { path: '/certificates', label: 'Vérifier Attestation', icon: ShieldCheck },
   ];
-
-  if (user && user.role === 'admin') {
-    navLinks.push(
-      { id: 'dashboard', label: 'Tableau de bord', icon: ShieldCheck, public: false },
-      { id: 'bulk-email', label: 'Envoyer E-mail', icon: Bell, public: false }
-    );
-  }
 
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           {/* Logo & Brand Title */}
-          <div 
-            className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => setActiveTab('home')}
-          >
+          <Link to="/" className="flex items-center gap-3 group">
             <img 
               src="/logo.png" 
               alt="IHN Logo" 
@@ -42,17 +34,17 @@ const Navbar = ({ activeTab, setActiveTab }) => {
                 Institut & Culture
               </span>
             </div>
-          </div>
+          </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Public Links */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
               const Icon = link.icon;
-              const isActive = activeTab === link.id;
+              const isActive = location.pathname === link.path;
               return (
-                <button
-                  key={link.id}
-                  onClick={() => setActiveTab(link.id)}
+                <Link
+                  key={link.path}
+                  to={link.path}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     isActive
                       ? 'bg-ihn-green text-white shadow-md shadow-ihn-green/20'
@@ -61,46 +53,42 @@ const Navbar = ({ activeTab, setActiveTab }) => {
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-ihn-yellow' : 'text-gray-400'}`} />
                   {link.label}
-                </button>
+                </Link>
               );
             })}
           </div>
 
-          {/* Desktop Right Auth Action */}
+          {/* Right Action: Admin Workspace link or Login */}
           <div className="hidden md:flex items-center gap-3">
-            {user ? (
-              <div className="flex items-center gap-3 bg-gray-50 border border-gray-200/80 rounded-full pl-4 pr-1 py-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-ihn-green text-white flex items-center justify-center font-bold text-xs">
-                    {user.name ? user.name.charAt(0).toUpperCase() : 'A'}
-                  </div>
-                  <div className="text-xs">
-                    <p className="font-bold text-gray-800 leading-tight">{user.name}</p>
-                    <span className="inline-block bg-ihn-yellow/20 text-ihn-green text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">
-                      {user.role}
-                    </span>
-                  </div>
-                </div>
+            {user && user.role === 'admin' ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/admin/dashboard"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ihn-dark text-white font-bold text-xs hover:bg-ihn-dark/90 transition-all shadow-md"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-ihn-yellow" />
+                  Espace Administration
+                </Link>
                 <button
                   onClick={logout}
                   title="Se déconnecter"
-                  className="p-2 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setActiveTab('login')}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ihn-green text-white font-semibold text-sm hover:bg-ihn-green/90 transition-all shadow-md shadow-ihn-green/20 hover:shadow-lg hover:shadow-ihn-green/30"
+              <Link
+                to="/login"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ihn-green text-white font-semibold text-sm hover:bg-ihn-green/90 transition-all shadow-md shadow-ihn-green/20 hover:shadow-lg"
               >
                 <User className="w-4 h-4 text-ihn-yellow" />
-                Espace Admin
-              </button>
+                Accès Admin
+              </Link>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <div className="flex md:hidden items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -112,53 +100,45 @@ const Navbar = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Navigation Dropdown */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-b border-gray-200 px-4 pt-2 pb-6 space-y-2">
           {navLinks.map((link) => {
             const Icon = link.icon;
-            const isActive = activeTab === link.id;
+            const isActive = location.pathname === link.path;
             return (
-              <button
-                key={link.id}
-                onClick={() => {
-                  setActiveTab(link.id);
-                  setMobileMenuOpen(false);
-                }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-semibold text-sm transition-colors ${
-                  isActive
-                    ? 'bg-ihn-green text-white'
-                    : 'text-gray-700 hover:bg-gray-50'
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-colors ${
+                  isActive ? 'bg-ihn-green text-white' : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? 'text-ihn-yellow' : 'text-gray-400'}`} />
                 {link.label}
-              </button>
+              </Link>
             );
           })}
           <div className="pt-4 border-t border-gray-100">
-            {user ? (
-              <button
-                onClick={() => {
-                  logout();
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-50 text-red-600 font-semibold text-sm"
+            {user && user.role === 'admin' ? (
+              <Link
+                to="/admin/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-ihn-dark text-white font-bold text-sm"
               >
-                <LogOut className="w-4 h-4" />
-                Se déconnecter ({user.name})
-              </button>
+                <LayoutDashboard className="w-4 h-4 text-ihn-yellow" />
+                Accéder à l'Espace Admin
+              </Link>
             ) : (
-              <button
-                onClick={() => {
-                  setActiveTab('login');
-                  setMobileMenuOpen(false);
-                }}
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-ihn-green text-white font-semibold text-sm shadow-md"
               >
                 <User className="w-4 h-4 text-ihn-yellow" />
-                Espace Administration
-              </button>
+                Accès Administration
+              </Link>
             )}
           </div>
         </div>

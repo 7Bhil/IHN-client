@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { GraduationCap, Clock, Award, CheckCircle2, AlertCircle, X, Search, ArrowRight, User, Mail, Phone, BookOpen, CreditCard } from 'lucide-react';
 
@@ -38,7 +39,8 @@ const mockFormations = [
   },
 ];
 
-const Formations = ({ setActiveTab, setSelectedRegistrationForPayment }) => {
+const Formations = () => {
+  const navigate = useNavigate();
   const [formations, setFormations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -351,16 +353,16 @@ const Formations = ({ setActiveTab, setSelectedRegistrationForPayment }) => {
                 {selectedFormation.price > 0 && (
                   <button
                     onClick={() => {
-                      if (setSelectedRegistrationForPayment) {
-                        setSelectedRegistrationForPayment({
-                          ...regResult.registration,
-                          amount: selectedFormation.price,
-                          title: selectedFormation.title,
-                        });
-                        setActiveTab('payments');
-                      } else {
-                        setSelectedFormation(null);
-                      }
+                      navigate('/payments', {
+                        state: {
+                          selectedRegistration: {
+                            ...regResult.registration,
+                            amount: selectedFormation.price,
+                            title: selectedFormation.title,
+                            phone: regForm.phone,
+                          }
+                        }
+                      });
                     }}
                     className="w-full py-4 rounded-xl bg-ihn-yellow text-ihn-dark font-extrabold text-sm shadow-md flex items-center justify-center gap-2 hover:bg-yellow-400 transition-colors"
                   >

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { Calendar, GraduationCap, Users, DollarSign, Download, Plus, Mail, CreditCard, ArrowUpRight, TrendingUp } from 'lucide-react';
 
-const Dashboard = ({ setActiveTab }) => {
+const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     kpis: {
       totalEvents: 0,
@@ -132,7 +134,7 @@ const Dashboard = ({ setActiveTab }) => {
         <h2 className="text-xl font-bold text-gray-900">Raccourcis d'Administration</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <button
-            onClick={() => setActiveTab('admin-events')}
+            onClick={() => navigate('/admin/events')}
             className="p-5 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group"
           >
             <div className="flex items-center gap-3">
@@ -145,7 +147,7 @@ const Dashboard = ({ setActiveTab }) => {
           </button>
 
           <button
-            onClick={() => setActiveTab('admin-formations')}
+            onClick={() => navigate('/admin/formations')}
             className="p-5 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group"
           >
             <div className="flex items-center gap-3">
@@ -158,7 +160,7 @@ const Dashboard = ({ setActiveTab }) => {
           </button>
 
           <button
-            onClick={() => setActiveTab('bulk-email')}
+            onClick={() => navigate('/admin/notifications')}
             className="p-5 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group"
           >
             <div className="flex items-center gap-3">
@@ -171,7 +173,7 @@ const Dashboard = ({ setActiveTab }) => {
           </button>
 
           <button
-            onClick={() => setActiveTab('payments')}
+            onClick={() => navigate('/payments')}
             className="p-5 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group"
           >
             <div className="flex items-center gap-3">
