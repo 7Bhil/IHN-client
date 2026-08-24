@@ -8,6 +8,7 @@ const Payments = ({ selectedRegistration, onPaymentSuccess }) => {
   const [provider, setProvider] = useState('MTN');
   const [phone, setPhone] = useState(selectedRegistration?.phone || '97000000');
   const [amount, setAmount] = useState(selectedRegistration?.amount || 35000);
+  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState('form'); // 'form' | 'ussd' | 'success'
   const [result, setResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');

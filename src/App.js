@@ -9,6 +9,7 @@ import AdminEvents from './pages/AdminEvents';
 import Formations from './pages/Formations';
 import AdminFormations from './pages/AdminFormations';
 import Payments from './pages/Payments';
+import AdminNotifications from './pages/AdminNotifications';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
@@ -28,6 +29,8 @@ function MainApp() {
         return <AdminFormations />;
       case 'payments':
         return <Payments selectedRegistration={selectedRegistrationForPayment} />;
+      case 'bulk-email':
+        return <AdminNotifications />;
       case 'login':
         return <Login setActiveTab={setActiveTab} />;
       default:
