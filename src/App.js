@@ -10,6 +10,7 @@ import Formations from './pages/Formations';
 import AdminFormations from './pages/AdminFormations';
 import Payments from './pages/Payments';
 import AdminNotifications from './pages/AdminNotifications';
+import Certificates from './pages/Certificates';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
@@ -29,6 +30,8 @@ function MainApp() {
         return <AdminFormations />;
       case 'payments':
         return <Payments selectedRegistration={selectedRegistrationForPayment} />;
+      case 'certificates':
+        return <Certificates />;
       case 'bulk-email':
         return <AdminNotifications />;
       case 'login':
