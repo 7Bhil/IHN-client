@@ -2,42 +2,6 @@ import React, { useState, useEffect } from 'react';
 import API from '../services/api';
 import { Calendar, MapPin, Users, CheckCircle2, AlertCircle, X, Search, Clock, ArrowRight, User, Mail, Phone } from 'lucide-react';
 
-const mockEvents = [
-  {
-    _id: 'evt-1',
-    title: 'Festival des Arts & Rythmes Beninois',
-    description: 'Une grande célébration de la musique traditionnelle et moderne, expos artisanales et spectacles de danse folklorique au cœur du Centre IHN.',
-    date: '2026-09-15T18:00:00.000Z',
-    location: 'Grande Scène IHN, Cotonou',
-    capacity: 250,
-    registeredCount: 42,
-    category: 'Musique & Danse',
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    _id: 'evt-2',
-    title: 'Exposition d\'Art Contemporain & Sculptures',
-    description: 'Découvrez les œuvres inspirantes des artistes émergents béninois lors de ce vernissage exclusif.',
-    date: '2026-09-28T15:00:00.000Z',
-    location: 'Galerie d\'Art IHN',
-    capacity: 120,
-    registeredCount: 88,
-    category: 'Exposition Art',
-    image: 'https://images.unsplash.com/photo-1536924940846-227afb31e2a5?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    _id: 'evt-3',
-    title: 'Conférence : Le Patrimoine Culturel à l\'Ère du Numérique',
-    description: 'Table ronde et débats avec des historiens, chercheurs et acteurs de l\'innovation culturelle.',
-    date: '2026-10-10T10:00:00.000Z',
-    location: 'Amphithéâtre IHN, Porto-Novo',
-    capacity: 150,
-    registeredCount: 110,
-    category: 'Conférence',
-    image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=800&q=80',
-  },
-];
-
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,14 +22,10 @@ const Events = () => {
   const fetchEvents = async () => {
     try {
       const res = await API.get('/events');
-      if (res.data && res.data.length > 0) {
-        setEvents(res.data);
-      } else {
-        setEvents(mockEvents);
-      }
+      setEvents(res.data || []);
     } catch (err) {
-      console.warn('API Error, loading fallback events:', err);
-      setEvents(mockEvents);
+      console.error('Error fetching events from API:', err);
+      setEvents([]);
     } finally {
       setLoading(false);
     }
@@ -86,8 +46,7 @@ const Events = () => {
     try {
       const res = await API.post(`/events/${selectedEvent._id}/register`, regForm);
       setRegResult(res.data);
-      // Update local count
-      setEvents(events.map(evt => evt._id === selectedEvent._id ? { ...evt, registeredCount: evt.registeredCount + 1 } : evt));
+      setEvents(events.map(evt => evt._id === selectedEvent._id ? { ...evt, registeredCount: (evt.registeredCount || 0) + 1 } : evt));
     } catch (err) {
       setErrorMsg(err.response?.data?.message || 'Erreur lors de l\'inscription. Veuillez réessayer.');
     } finally {
@@ -99,8 +58,8 @@ const Events = () => {
 
   const filteredEvents = events.filter(evt => {
     const matchesSearch = evt.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          evt.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          evt.location.toLowerCase().includes(searchTerm.toLowerCase());
+                          (evt.description && evt.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                          (evt.location && evt.location.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCat = selectedCategory === 'All' || evt.category === selectedCategory;
     return matchesSearch && matchesCat;
   });
@@ -157,21 +116,21 @@ const Events = () => {
       ) : filteredEvents.length === 0 ? (
         <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 space-y-4">
           <Calendar className="w-12 h-12 text-gray-300 mx-auto" />
-          <h3 className="text-xl font-bold text-gray-700">Aucun événement trouvé</h3>
-          <p className="text-sm text-gray-500">Essayez de modifier votre recherche ou le filtre de catégorie.</p>
+          <h3 className="text-xl font-bold text-gray-700">Aucun événement disponible</h3>
+          <p className="text-sm text-gray-500">Les nouveaux événements ajoutés depuis l'administration s'afficheront ici.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredEvents.map((evt) => {
             const isFull = evt.registeredCount >= evt.capacity;
-            const formattedDate = new Date(evt.date).toLocaleDateString('fr-FR', {
+            const formattedDate = evt.date ? new Date(evt.date).toLocaleDateString('fr-FR', {
               weekday: 'long',
               day: 'numeric',
               month: 'long',
               year: 'numeric',
               hour: '2-digit',
               minute: '2-digit',
-            });
+            }) : 'Date non communiquée';
 
             return (
               <div
@@ -182,7 +141,7 @@ const Events = () => {
                   {/* Event Cover Image */}
                   <div className="relative h-48 overflow-hidden bg-gray-100">
                     <img
-                      src={evt.image.startsWith('http') ? evt.image : `http://localhost:5000${evt.image}`}
+                      src={evt.image?.startsWith('http') ? evt.image : `http://localhost:5000${evt.image}`}
                       alt={evt.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       onError={(e) => {
@@ -216,7 +175,7 @@ const Events = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-ihn-green shrink-0" />
-                        <span>{evt.registeredCount} / {evt.capacity} participants inscrits</span>
+                        <span>{evt.registeredCount || 0} / {evt.capacity} participants inscrits</span>
                       </div>
                     </div>
                   </div>
@@ -263,7 +222,7 @@ const Events = () => {
             {!regResult ? (
               <div className="space-y-6">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-ihn-green">Formulaire d'inscription</span>
+                  <span className="text-xs font-bold uppercase text-ihn-green">Formulaire d'inscription</span>
                   <h3 className="text-2xl font-black text-gray-900 mt-1">{selectedEvent.title}</h3>
                   <p className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                     <MapPin className="w-3.5 h-3.5 text-ihn-green" /> {selectedEvent.location}

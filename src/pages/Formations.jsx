@@ -3,42 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { GraduationCap, Clock, Award, CheckCircle2, AlertCircle, X, Search, ArrowRight, User, Mail, Phone, BookOpen, CreditCard } from 'lucide-react';
 
-const mockFormations = [
-  {
-    _id: 'frm-1',
-    title: 'Initiation à la Musique Traditionnelle & Percussions',
-    program: 'Module 1: Histoire des rythmes traditionnels béninois (Gota, Tipenti, Zinli).\nModule 2: Pratique du Djembé et des gongs.\nModule 3: Composition en groupe et performance finale.',
-    duration: '4 Semaines (16h de cours)',
-    price: 35000,
-    instructor: 'Maître Kossi Tossou',
-    category: 'Musique & Rythmes',
-    enrolledCount: 18,
-    image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    _id: 'frm-2',
-    title: 'Techniques de Peinture & Arts Plastiques',
-    program: 'Module 1: Théorie de la couleur et acrylique.\nModule 2: Techniques de peinture au couteau et textures.\nModule 3: Réalisation d\'un tableau personnel exposé au centre.',
-    duration: '6 Semaines (24h de cours)',
-    price: 45000,
-    instructor: 'Artiste Sègbégnon Agbossou',
-    category: 'Arts Plastiques',
-    enrolledCount: 14,
-    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    _id: 'frm-3',
-    title: 'Gestion de Projets Culturels & Événementiel',
-    program: 'Module 1: Montage de dossier de financement culturel.\nModule 2: Communication et marketing d\'événement.\nModule 3: Logistique et suivi budgétaire.',
-    duration: '8 Semaines (32h de cours)',
-    price: 60000,
-    instructor: 'Dr. Mireille Houndété',
-    category: 'Management Culturel',
-    enrolledCount: 25,
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
-  },
-];
-
 const Formations = () => {
   const navigate = useNavigate();
   const [formations, setFormations] = useState([]);
@@ -60,14 +24,10 @@ const Formations = () => {
   const fetchFormations = async () => {
     try {
       const res = await API.get('/formations');
-      if (res.data && res.data.length > 0) {
-        setFormations(res.data);
-      } else {
-        setFormations(mockFormations);
-      }
+      setFormations(res.data || []);
     } catch (err) {
-      console.warn('API Error, using fallback formations:', err);
-      setFormations(mockFormations);
+      console.error('Error fetching formations from API:', err);
+      setFormations([]);
     } finally {
       setLoading(false);
     }
@@ -88,7 +48,7 @@ const Formations = () => {
     try {
       const res = await API.post(`/formations/${selectedFormation._id}/register`, regForm);
       setRegResult(res.data);
-      setFormations(formations.map(f => f._id === selectedFormation._id ? { ...f, enrolledCount: f.enrolledCount + 1 } : f));
+      setFormations(formations.map(f => f._id === selectedFormation._id ? { ...f, enrolledCount: (f.enrolledCount || 0) + 1 } : f));
     } catch (err) {
       setErrorMsg(err.response?.data?.message || 'Erreur lors de l\'inscription.');
     } finally {
@@ -100,8 +60,8 @@ const Formations = () => {
 
   const filteredFormations = formations.filter(f => {
     const matchesSearch = f.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          f.program.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          f.instructor.toLowerCase().includes(searchTerm.toLowerCase());
+                          (f.program && f.program.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                          (f.instructor && f.instructor.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCat = selectedCategory === 'All' || f.category === selectedCategory;
     return matchesSearch && matchesCat;
   });
@@ -157,6 +117,7 @@ const Formations = () => {
         <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 space-y-4">
           <BookOpen className="w-12 h-12 text-gray-300 mx-auto" />
           <h3 className="text-xl font-bold text-gray-700">Aucune formation disponible</h3>
+          <p className="text-sm text-gray-500">Les nouvelles sessions de formation créées depuis l'administration s'afficheront ici.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -181,7 +142,7 @@ const Formations = () => {
                     </span>
                   </div>
                   <div className="absolute bottom-4 right-4 bg-ihn-yellow text-ihn-dark font-black px-3 py-1 rounded-xl text-sm shadow-md">
-                    {formation.price === 0 ? 'GRATUIT' : `${formation.price.toLocaleString('fr-FR')} FCFA`}
+                    {formation.price === 0 ? 'GRATUIT' : `${formation.price?.toLocaleString('fr-FR')} FCFA`}
                   </div>
                 </div>
 
@@ -248,7 +209,7 @@ const Formations = () => {
                   <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
                     <span className="text-xs text-gray-500">Montant de la formation :</span>
                     <span className="text-lg font-black text-ihn-green">
-                      {selectedFormation.price === 0 ? 'Gratuit' : `${selectedFormation.price.toLocaleString('fr-FR')} FCFA`}
+                      {selectedFormation.price === 0 ? 'Gratuit' : `${selectedFormation.price?.toLocaleString('fr-FR')} FCFA`}
                     </span>
                   </div>
                 </div>
@@ -363,7 +324,7 @@ const Formations = () => {
                     className="w-full py-4 rounded-xl bg-ihn-yellow text-ihn-dark font-extrabold text-sm shadow-md flex items-center justify-center gap-2 hover:bg-yellow-400 transition-colors"
                   >
                     <CreditCard className="w-5 h-5 text-ihn-dark" />
-                    Régler {selectedFormation.price.toLocaleString('fr-FR')} FCFA via Mobile Money
+                    Régler {selectedFormation.price?.toLocaleString('fr-FR')} FCFA via Mobile Money
                   </button>
                 )}
 
