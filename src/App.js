@@ -11,6 +11,7 @@ import AdminFormations from './pages/AdminFormations';
 import Payments from './pages/Payments';
 import AdminNotifications from './pages/AdminNotifications';
 import Certificates from './pages/Certificates';
+import Dashboard from './pages/Dashboard';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
@@ -20,6 +21,8 @@ function MainApp() {
     switch (activeTab) {
       case 'home':
         return <Home setActiveTab={setActiveTab} />;
+      case 'dashboard':
+        return <Dashboard setActiveTab={setActiveTab} />;
       case 'events':
         return <Events />;
       case 'admin-events':
