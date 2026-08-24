@@ -6,9 +6,12 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Events from './pages/Events';
 import AdminEvents from './pages/AdminEvents';
+import Formations from './pages/Formations';
+import AdminFormations from './pages/AdminFormations';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
+  const [selectedRegistrationForPayment, setSelectedRegistrationForPayment] = useState(null);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -18,6 +21,10 @@ function MainApp() {
         return <Events />;
       case 'admin-events':
         return <AdminEvents />;
+      case 'formations':
+        return <Formations setActiveTab={setActiveTab} setSelectedRegistrationForPayment={setSelectedRegistrationForPayment} />;
+      case 'admin-formations':
+        return <AdminFormations />;
       case 'login':
         return <Login setActiveTab={setActiveTab} />;
       default:
