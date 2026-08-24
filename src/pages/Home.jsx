@@ -1,17 +1,39 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Calendar, GraduationCap, ArrowRight, Sparkles, Award, BookOpen, 
-  CheckCircle2, Users, ShieldCheck, ChevronDown, MessageSquare, 
-  CreditCard, MapPin, Star, Heart
+  Calendar, GraduationCap, ArrowRight, Award, BookOpen, 
+  CheckCircle2, ChevronDown, Mail, Heart, Star, Send
 } from 'lucide-react';
+import API from '../services/api';
 
 const Home = () => {
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState(null);
 
+  // Newsletter state
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
+  const [newsletterMsg, setNewsletterMsg] = useState(null);
+
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const handleSubscribeNewsletter = async (e) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    setNewsletterSubmitting(true);
+    setNewsletterMsg(null);
+
+    try {
+      const res = await API.post('/notifications/subscribe', { email: newsletterEmail });
+      setNewsletterMsg({ type: 'success', text: res.data.message || 'Inscription réussie !' });
+      setNewsletterEmail('');
+    } catch (err) {
+      setNewsletterMsg({ type: 'error', text: err.response?.data?.message || 'Erreur lors de l\'inscription.' });
+    } finally {
+      setNewsletterSubmitting(false);
+    }
   };
 
   const faqs = [
@@ -59,18 +81,13 @@ const Home = () => {
 
   return (
     <div className="space-y-24 pb-20 overflow-hidden">
-      {/* 1. Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-ihn-dark via-[#102717] to-ihn-green text-white py-20 lg:py-28 px-4 sm:px-6 lg:px-8 rounded-b-[3rem] shadow-2xl">
+      {/* 1. Full-Screen Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-ihn-dark via-[#102717] to-ihn-green text-white min-h-[calc(100vh-5rem)] flex items-center justify-center px-4 sm:px-6 lg:px-8 rounded-b-[3rem] shadow-2xl">
         <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-ihn-light-green/20 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 bg-ihn-yellow/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12">
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-ihn-yellow text-xs font-bold uppercase tracking-widest shadow-inner">
-              <Sparkles className="w-4 h-4" />
-              Espace Culturel & Académique IHN
-            </div>
-            
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
               L'Art, la Culture et la Formation au Cœur de <span className="text-ihn-yellow">l'Excellence</span>
             </h1>
@@ -100,7 +117,7 @@ const Home = () => {
           </div>
 
           <div className="lg:col-span-5 flex justify-center">
-            <div className="relative group">
+            <div className="relative group w-full max-w-md">
               <div className="absolute -inset-1 bg-gradient-to-r from-ihn-light-green via-ihn-yellow to-ihn-green rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
               <div className="relative bg-ihn-dark/90 border border-white/10 p-8 rounded-3xl backdrop-blur-xl text-center space-y-6 shadow-2xl">
                 <img src="/logo.png" alt="Logo IHN" className="h-28 mx-auto object-contain filter drop-shadow-md" />
@@ -171,9 +188,6 @@ const Home = () => {
           </div>
 
           <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-ihn-green/10 text-ihn-green font-bold text-xs uppercase tracking-wider">
-              À propos de notre Institution
-            </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight leading-snug">
               Une Référence pour la Promotion de la Culture et du Savoir
             </h2>
@@ -202,9 +216,6 @@ const Home = () => {
       <section className="bg-ihn-lightBg py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-ihn-green bg-ihn-green/10 px-4 py-1.5 rounded-full">
-              Parcours Simple & Intuitif
-            </span>
             <h2 className="text-3xl font-extrabold text-gray-900">Comment participer en 3 étapes ?</h2>
             <p className="text-gray-600 text-sm">
               Découvrez la simplicité d'inscription et d'obtention de vos diplômes certifiés sur la plateforme IHN.
@@ -245,12 +256,61 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 5. Testimonials Section */}
+      {/* 5. Newsletter / Email Signup Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-ihn-green to-emerald-800 rounded-3xl p-8 sm:p-12 text-white shadow-2xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-6 space-y-3">
+            <h2 className="text-3xl font-black">Restez informé de nos activités</h2>
+            <p className="text-green-100 text-sm leading-relaxed">
+              Inscrivez votre adresse e-mail pour recevoir en avant-première nos invitations aux événements culturels et l'ouverture des nouvelles sessions de formation.
+            </p>
+          </div>
+
+          <div className="lg:col-span-6">
+            <form onSubmit={handleSubscribeNewsletter} className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Mail className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="Votre adresse e-mail..."
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white text-gray-900 text-sm font-medium focus:ring-2 focus:ring-ihn-yellow outline-none shadow-md"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={newsletterSubmitting}
+                  className="px-8 py-4 bg-ihn-yellow hover:bg-yellow-400 text-ihn-dark font-extrabold text-sm rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 shrink-0"
+                >
+                  {newsletterSubmitting ? (
+                    <div className="w-5 h-5 border-2 border-ihn-dark border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <span>S'abonner</span>
+                      <Send className="w-4 h-4 text-ihn-dark" />
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {newsletterMsg && (
+                <div className={`p-3 rounded-xl text-xs font-bold ${
+                  newsletterMsg.type === 'success' ? 'bg-white/20 text-ihn-yellow' : 'bg-red-500/80 text-white'
+                }`}>
+                  {newsletterMsg.text}
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. Testimonials Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-ihn-green bg-ihn-green/10 px-4 py-1.5 rounded-full">
-            Témoignages & Avis
-          </span>
           <h2 className="text-3xl font-extrabold text-gray-900">Ce que disent nos apprenants</h2>
           <p className="text-gray-600 text-sm">
             Découvrez les retours d'expérience des participants qui ont suivi nos programmes au Centre IHN.
@@ -283,12 +343,9 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 6. FAQ Accordion Section */}
+      {/* 7. FAQ Accordion Section */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="text-center space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-ihn-green bg-ihn-green/10 px-4 py-1.5 rounded-full">
-            Foire aux Questions
-          </span>
           <h2 className="text-3xl font-extrabold text-gray-900">Des questions ? Nous y répondons</h2>
         </div>
 
@@ -312,7 +369,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 7. Call To Action (CTA Banner) */}
+      {/* 8. Call To Action (CTA Banner) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-br from-ihn-dark via-ihn-card to-ihn-green text-white p-12 rounded-3xl shadow-2xl relative overflow-hidden text-center lg:text-left grid grid-cols-1 lg:grid-cols-12 gap-8 items-center border border-white/10">
           <div className="lg:col-span-8 space-y-4">

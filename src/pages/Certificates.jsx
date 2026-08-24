@@ -34,10 +34,6 @@ const Certificates = () => {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       {/* Title */}
       <div className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-ihn-green/10 text-ihn-green font-bold text-xs uppercase tracking-wider">
-          <Award className="w-4 h-4 text-ihn-yellow" />
-          Vérification Officielle
-        </div>
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Attestations & Diplômes IHN</h1>
         <p className="text-gray-600 text-sm max-w-xl mx-auto">
           Saisissez votre code d'inscription (ex: <code className="text-ihn-green font-bold">IHN-FRM-88231</code>) ou votre numéro d'attestation pour télécharger votre diplôme au format PDF.

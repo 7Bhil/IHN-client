@@ -133,22 +133,6 @@ const Login = () => {
               )}
             </button>
           </form>
-
-          {/* Seed admin helper */}
-          <div className="mt-8 pt-6 border-t border-gray-100">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500 font-medium">Pas encore d'administrateur ?</span>
-              <button
-                type="button"
-                onClick={handleSeed}
-                disabled={seeding}
-                className="text-xs font-bold text-ihn-green hover:text-ihn-light-green flex items-center gap-1.5 bg-ihn-green/10 hover:bg-ihn-green/20 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-ihn-yellow" />
-                {seeding ? 'Initialisation...' : 'Créer compte admin'}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

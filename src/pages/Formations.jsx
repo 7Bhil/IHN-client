@@ -110,10 +110,6 @@ const Formations = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       {/* Title */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-ihn-light-green/20 text-ihn-green font-bold text-xs uppercase tracking-wider">
-          <GraduationCap className="w-4 h-4 text-ihn-green" />
-          Catalogue Académique
-        </div>
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Formations Certifiantes IHN</h1>
         <p className="text-gray-600 text-base">
           Des programmes intensifs dispensés par des experts. Obtenez votre attestation officielle en fin de formation.

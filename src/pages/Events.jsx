@@ -109,10 +109,6 @@ const Events = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
       {/* Page Title & Intro */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-ihn-green/10 text-ihn-green font-bold text-xs uppercase tracking-wider">
-          <Calendar className="w-4 h-4 text-ihn-yellow" />
-          Agenda Culturel
-        </div>
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Événements & Rencontres IHN</h1>
         <p className="text-gray-600 text-base">
           Rejoignez-nous lors de nos festivals, expositions et conférences. Inscription gratuite et confirmation immédiate.
