@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Menu, X, Calendar, GraduationCap, ShieldCheck, Home, LayoutDashboard } from 'lucide-react';
+import { LogOut, User, Menu, X, Calendar, GraduationCap, ShieldCheck, Home, LayoutDashboard, CreditCard } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -13,6 +13,7 @@ const Navbar = () => {
     { path: '/events', label: 'Événements', icon: Calendar },
     { path: '/formations', label: 'Formations', icon: GraduationCap },
     { path: '/certificates', label: 'Vérifier Attestation', icon: ShieldCheck },
+    { path: '/payments', label: 'Paiement MoMo', icon: CreditCard },
   ];
 
   return (
@@ -88,58 +89,103 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle Button */}
           <div className="flex md:hidden items-center">
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:text-ihn-green hover:bg-gray-100"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Ouvrir le menu"
+              className="p-2 rounded-xl text-gray-700 hover:text-ihn-green hover:bg-gray-100 transition-colors"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <Menu className="w-6 h-6" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Navigation Dropdown */}
+      {/* Right-to-Left Mobile Drawer Overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 px-4 pt-2 pb-6 space-y-2">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            const isActive = location.pathname === link.path;
-            return (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-colors ${
-                  isActive ? 'bg-ihn-green text-white' : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-ihn-yellow' : 'text-gray-400'}`} />
-                {link.label}
-              </Link>
-            );
-          })}
-          <div className="pt-4 border-t border-gray-100">
-            {user && user.role === 'admin' ? (
-              <Link
-                to="/admin/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-ihn-dark text-white font-bold text-sm"
-              >
-                <LayoutDashboard className="w-4 h-4 text-ihn-yellow" />
-                Accéder à l'Espace Admin
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-ihn-green text-white font-semibold text-sm shadow-md"
-              >
-                <User className="w-4 h-4 text-ihn-yellow" />
-                Accès Administration
-              </Link>
-            )}
+        <div className="fixed inset-0 z-50 md:hidden flex justify-end">
+          {/* Backdrop Blur */}
+          <div 
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 bg-ihn-dark/60 backdrop-blur-sm transition-opacity duration-300"
+          ></div>
+
+          {/* Slide-over Drawer Panel (Right to Left) */}
+          <div className="relative w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between p-6 z-10 animate-in slide-in-from-right duration-300">
+            <div className="space-y-6">
+              {/* Drawer Header */}
+              <div className="flex justify-between items-center pb-4 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <img src="/logo.png" alt="IHN" className="h-8 w-auto object-contain" />
+                  <span className="font-extrabold text-sm text-gray-900">Centre IHN</span>
+                </div>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Mobile Nav Links */}
+              <div className="space-y-2">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = location.pathname === link.path;
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+                        isActive
+                          ? 'bg-ihn-green text-white shadow-md shadow-ihn-green/20'
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-ihn-yellow' : 'text-gray-400'}`} />
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="pt-6 border-t border-gray-100 space-y-3">
+              {user && user.role === 'admin' ? (
+                <>
+                  <Link
+                    to="/admin/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-ihn-dark text-white font-bold text-sm shadow-md"
+                  >
+                    <LayoutDashboard className="w-4 h-4 text-ihn-yellow" />
+                    Espace Administration
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 text-red-700 font-bold text-xs hover:bg-red-100"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Se déconnecter
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-ihn-green text-white font-bold text-sm shadow-md shadow-ihn-green/20"
+                >
+                  <User className="w-4 h-4 text-ihn-yellow" />
+                  Accès Administration
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}

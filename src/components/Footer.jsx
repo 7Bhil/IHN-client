@@ -73,12 +73,15 @@ const Footer = () => {
             <p className="text-xs text-gray-400 mb-3">
               Inscriptions et règlements en ligne sécurisés via vos moyens de paiement locaux :
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="bg-yellow-500 text-black font-extrabold text-xs px-3 py-1.5 rounded shadow">
                 MTN MoMo
               </span>
               <span className="bg-blue-600 text-white font-extrabold text-xs px-3 py-1.5 rounded shadow">
                 Moov Money
+              </span>
+              <span className="bg-purple-700 text-white font-extrabold text-xs px-3 py-1.5 rounded shadow">
+                Celtis Cash
               </span>
             </div>
           </div>

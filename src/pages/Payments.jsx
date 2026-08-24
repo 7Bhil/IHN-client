@@ -19,7 +19,7 @@ const Payments = ({ onPaymentSuccess }) => {
 
   // Admin Payment History
   const [history, setHistory] = useState([]);
-  const [stats, setStats] = useState({ totalRevenue: 0, mtnCount: 0, moovCount: 0, totalCount: 0 });
+  const [stats, setStats] = useState({ totalRevenue: 0, mtnCount: 0, moovCount: 0, celtisCount: 0, totalCount: 0 });
   const [historyLoading, setHistoryLoading] = useState(false);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const Payments = ({ onPaymentSuccess }) => {
     try {
       const res = await API.get('/payments/history');
       setHistory(res.data.payments || []);
-      setStats(res.data.stats || { totalRevenue: 0, mtnCount: 0, moovCount: 0, totalCount: 0 });
+      setStats(res.data.stats || { totalRevenue: 0, mtnCount: 0, moovCount: 0, celtisCount: 0, totalCount: 0 });
     } catch (err) {
       console.warn('API error fetching payment history:', err);
     } finally {
@@ -70,24 +70,27 @@ const Payments = ({ onPaymentSuccess }) => {
     }, 2000);
   };
 
+  const getProviderLabel = (prov) => {
+    if (prov === 'MTN') return 'MTN MoMo';
+    if (prov === 'MOOV') return 'Moov Money';
+    if (prov === 'CELTIS') return 'Celtis Cash';
+    return prov;
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
       {/* Title */}
       <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-ihn-yellow/20 text-ihn-dark font-extrabold text-xs uppercase tracking-wider">
-          <CreditCard className="w-4 h-4 text-ihn-dark" />
-          Paiement Sécurisé Mobile Money
-        </div>
-        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Règlement en Ligne (MTN & Moov Bénin)</h1>
+        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Règlement en Ligne Mobile Money</h1>
         <p className="text-gray-600 text-base">
-          Réglez vos frais de formation directement avec votre compte Mobile Money. Confirmation instantanée sans aucun frais supplémentaire.
+          Réglez vos frais de formation directement via MTN MoMo, Moov Money ou Celtis Cash Bénin. Confirmation instantanée sans aucun frais supplémentaire.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Payment Checkout Form Box */}
         <div className="lg:col-span-6 bg-white p-8 rounded-3xl border border-gray-100 shadow-xl relative overflow-hidden space-y-6">
-          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-yellow-500 via-ihn-green to-blue-600"></div>
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-yellow-500 via-blue-600 to-purple-600"></div>
 
           <div>
             <span className="text-xs font-bold uppercase text-ihn-green">Guichet de Paiement</span>
@@ -98,14 +101,14 @@ const Payments = ({ onPaymentSuccess }) => {
 
           {step === 'form' && (
             <form onSubmit={handleInitiatePayment} className="space-y-6">
-              {/* Operator Selector */}
+              {/* Operator Selector (MTN, MOOV, CELTIS) */}
               <div>
                 <label className="block text-xs font-bold uppercase text-gray-700 mb-3">Sélectionnez votre opérateur *</label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   <button
                     type="button"
                     onClick={() => setProvider('MTN')}
-                    className={`p-4 rounded-2xl border-2 font-black text-sm flex flex-col items-center gap-2 transition-all ${
+                    className={`p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm flex flex-col items-center gap-2 transition-all ${
                       provider === 'MTN'
                         ? 'border-yellow-400 bg-yellow-50/80 text-yellow-900 shadow-md scale-[1.02]'
                         : 'border-gray-200 text-gray-600 hover:border-gray-300'
@@ -120,7 +123,7 @@ const Payments = ({ onPaymentSuccess }) => {
                   <button
                     type="button"
                     onClick={() => setProvider('MOOV')}
-                    className={`p-4 rounded-2xl border-2 font-black text-sm flex flex-col items-center gap-2 transition-all ${
+                    className={`p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm flex flex-col items-center gap-2 transition-all ${
                       provider === 'MOOV'
                         ? 'border-blue-600 bg-blue-50/80 text-blue-900 shadow-md scale-[1.02]'
                         : 'border-gray-200 text-gray-600 hover:border-gray-300'
@@ -130,6 +133,21 @@ const Payments = ({ onPaymentSuccess }) => {
                       MOOV
                     </div>
                     <span>Moov Money</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setProvider('CELTIS')}
+                    className={`p-3 sm:p-4 rounded-2xl border-2 font-black text-xs sm:text-sm flex flex-col items-center gap-2 transition-all ${
+                      provider === 'CELTIS'
+                        ? 'border-purple-600 bg-purple-50/80 text-purple-900 shadow-md scale-[1.02]'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-purple-700 text-white flex items-center justify-center font-extrabold text-xs">
+                      CELTIS
+                    </div>
+                    <span>Celtis Cash</span>
                   </button>
                 </div>
               </div>
@@ -164,7 +182,7 @@ const Payments = ({ onPaymentSuccess }) => {
                     className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-gray-200 font-bold text-gray-900 focus:ring-2 focus:ring-ihn-green"
                   />
                 </div>
-                <span className="text-[11px] text-gray-400 mt-1 block">Exemple Bénin : 97 XX XX XX ou 95 XX XX XX</span>
+                <span className="text-[11px] text-gray-400 mt-1 block">Exemple Bénin : 97 XX XX XX, 95 XX XX XX ou 40 XX XX XX</span>
               </div>
 
               {errorMsg && (
@@ -176,13 +194,15 @@ const Payments = ({ onPaymentSuccess }) => {
 
               <button
                 type="submit"
-                className={`w-full py-4 rounded-2xl font-extrabold text-base text-white shadow-xl flex items-center justify-center gap-2 transition-all ${
+                className={`w-full py-4 rounded-2xl font-extrabold text-base shadow-xl flex items-center justify-center gap-2 transition-all ${
                   provider === 'MTN'
                     ? 'bg-yellow-500 hover:bg-yellow-600 text-black shadow-yellow-500/20'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20'
+                    : provider === 'MOOV'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20'
+                    : 'bg-purple-700 hover:bg-purple-800 text-white shadow-purple-700/20'
                 }`}
               >
-                <span>Payer {Number(amount).toLocaleString('fr-FR')} FCFA par {provider === 'MTN' ? 'MTN MoMo' : 'Moov Money'}</span>
+                <span>Payer {Number(amount).toLocaleString('fr-FR')} FCFA par {getProviderLabel(provider)}</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
             </form>
@@ -197,7 +217,7 @@ const Payments = ({ onPaymentSuccess }) => {
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-gray-900">Demande d'autorisation envoyée</h3>
                 <p className="text-sm text-gray-600 max-w-sm mx-auto">
-                  Un écran de confirmation USSD a été envoyé au <strong className="text-gray-900">{phone}</strong>. Entrez votre code PIN Mobile Money pour valider.
+                  Un écran de confirmation USSD a été envoyé au <strong className="text-gray-900">{phone}</strong> via {getProviderLabel(provider)}. Entrez votre code PIN pour valider.
                 </p>
               </div>
               <div className="w-8 h-8 border-4 border-ihn-green border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -214,7 +234,7 @@ const Payments = ({ onPaymentSuccess }) => {
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-gray-900">Paiement Réussi !</h3>
                 <p className="text-sm text-gray-600">
-                  Votre transaction de <strong className="text-ihn-green">{Number(amount).toLocaleString('fr-FR')} FCFA</strong> via {provider === 'MTN' ? 'MTN MoMo' : 'Moov Money'} a été validée.
+                  Votre transaction de <strong className="text-ihn-green">{Number(amount).toLocaleString('fr-FR')} FCFA</strong> via {getProviderLabel(provider)} a été validée.
                 </p>
               </div>
 
@@ -243,7 +263,7 @@ const Payments = ({ onPaymentSuccess }) => {
               <ShieldCheck className="w-8 h-8 text-ihn-yellow" />
               <div>
                 <h3 className="text-xl font-bold">Sécurité & Instantanéité</h3>
-                <p className="text-xs text-gray-300">Intégration directe avec les APIs Mobile Money</p>
+                <p className="text-xs text-gray-300">Intégration directe avec MTN, Moov & Celtis Cash</p>
               </div>
             </div>
 
@@ -251,14 +271,18 @@ const Payments = ({ onPaymentSuccess }) => {
               Vos transactions sont immédiatement enregistrées et synchronisées avec votre dossier d'inscription IHN. Un reçu électronique est émis automatiquement.
             </p>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
-              <div className="bg-white/10 p-4 rounded-2xl">
-                <span className="block text-xs text-gray-300 font-semibold">Support MTN</span>
-                <span className="text-lg font-black text-yellow-400">*138# / App MoMo</span>
+            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-white/10 text-center">
+              <div className="bg-white/10 p-3 rounded-2xl">
+                <span className="block text-[10px] text-gray-300 font-semibold">MTN MoMo</span>
+                <span className="text-xs font-black text-yellow-400">*138#</span>
               </div>
-              <div className="bg-white/10 p-4 rounded-2xl">
-                <span className="block text-xs text-gray-300 font-semibold">Support MOOV</span>
-                <span className="text-lg font-black text-blue-400">*155# / Moov Money</span>
+              <div className="bg-white/10 p-3 rounded-2xl">
+                <span className="block text-[10px] text-gray-300 font-semibold">Moov Money</span>
+                <span className="text-xs font-black text-blue-400">*155#</span>
+              </div>
+              <div className="bg-white/10 p-3 rounded-2xl">
+                <span className="block text-[10px] text-gray-300 font-semibold">Celtis Cash</span>
+                <span className="text-xs font-black text-purple-400">*888#</span>
               </div>
             </div>
           </div>
@@ -272,7 +296,7 @@ const Payments = ({ onPaymentSuccess }) => {
                   Historique Administrateur
                 </h3>
                 <span className="text-xs font-black text-ihn-green bg-ihn-green/10 px-3 py-1 rounded-full">
-                  Total : {stats.totalRevenue.toLocaleString('fr-FR')} FCFA
+                  Total : {stats.totalRevenue?.toLocaleString('fr-FR')} FCFA
                 </span>
               </div>
 
@@ -289,9 +313,9 @@ const Payments = ({ onPaymentSuccess }) => {
                         <span className="text-gray-400 block font-mono text-[10px]">{p.transactionRef}</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-black text-ihn-green">{p.amount.toLocaleString('fr-FR')} FCFA</span>
+                        <span className="font-black text-ihn-green">{p.amount?.toLocaleString('fr-FR')} FCFA</span>
                         <span className={`block font-bold text-[10px] uppercase ${
-                          p.provider === 'MTN' ? 'text-yellow-600' : 'text-blue-600'
+                          p.provider === 'MTN' ? 'text-yellow-600' : p.provider === 'MOOV' ? 'text-blue-600' : 'text-purple-600'
                         }`}>
                           {p.provider}
                         </span>
