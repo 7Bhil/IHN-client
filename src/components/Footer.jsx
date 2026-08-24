@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Heart } from 'lucide-react';
 
-const Footer = ({ setActiveTab }) => {
+const Footer = () => {
   return (
     <footer className="bg-ihn-dark text-white border-t-4 border-ihn-yellow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -25,24 +26,24 @@ const Footer = ({ setActiveTab }) => {
             <h4 className="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">Navigation</h4>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <button onClick={() => setActiveTab('home')} className="hover:text-ihn-yellow transition-colors">
+                <Link to="/" className="hover:text-ihn-yellow transition-colors">
                   Accueil
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => setActiveTab('events')} className="hover:text-ihn-yellow transition-colors">
+                <Link to="/events" className="hover:text-ihn-yellow transition-colors">
                   Événements à venir
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => setActiveTab('formations')} className="hover:text-ihn-yellow transition-colors">
+                <Link to="/formations" className="hover:text-ihn-yellow transition-colors">
                   Catalogue de Formations
-                </button>
+                </Link>
               </li>
               <li>
-                <button onClick={() => setActiveTab('certificates')} className="hover:text-ihn-yellow transition-colors">
+                <Link to="/certificates" className="hover:text-ihn-yellow transition-colors">
                   Vérification d'Attestations
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
