@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import API from '../services/api';
-import { CreditCard, Phone, CheckCircle2, AlertCircle, ShieldCheck, ArrowRight, DollarSign, History } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { Phone, CheckCircle2, AlertCircle, ShieldCheck, ArrowRight, DollarSign } from 'lucide-react';
 
 const Payments = ({ onPaymentSuccess }) => {
-  const { user } = useAuth();
   const location = useLocation();
   const selectedRegistration = location.state?.selectedRegistration;
 
@@ -16,30 +14,6 @@ const Payments = ({ onPaymentSuccess }) => {
   const [step, setStep] = useState('form'); // 'form' | 'ussd' | 'success'
   const [result, setResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
-
-  // Admin Payment History
-  const [history, setHistory] = useState([]);
-  const [stats, setStats] = useState({ totalRevenue: 0, mtnCount: 0, moovCount: 0, celtisCount: 0, totalCount: 0 });
-  const [historyLoading, setHistoryLoading] = useState(false);
-
-  useEffect(() => {
-    if (user && user.role === 'admin') {
-      fetchPaymentHistory();
-    }
-  }, [user]);
-
-  const fetchPaymentHistory = async () => {
-    setHistoryLoading(true);
-    try {
-      const res = await API.get('/payments/history');
-      setHistory(res.data.payments || []);
-      setStats(res.data.stats || { totalRevenue: 0, mtnCount: 0, moovCount: 0, celtisCount: 0, totalCount: 0 });
-    } catch (err) {
-      console.warn('API error fetching payment history:', err);
-    } finally {
-      setHistoryLoading(false);
-    }
-  };
 
   const handleInitiatePayment = async (e) => {
     e.preventDefault();
@@ -60,7 +34,6 @@ const Payments = ({ onPaymentSuccess }) => {
         setResult(res.data);
         setStep('success');
         if (onPaymentSuccess) onPaymentSuccess();
-        if (user && user.role === 'admin') fetchPaymentHistory();
       } catch (err) {
         setErrorMsg(err.response?.data?.message || 'Erreur de traitement du paiement Mobile Money');
         setStep('form');
@@ -286,46 +259,6 @@ const Payments = ({ onPaymentSuccess }) => {
               </div>
             </div>
           </div>
-
-          {/* Admin Transaction History Overview */}
-          {user && user.role === 'admin' && (
-            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <History className="w-5 h-5 text-ihn-green" />
-                  Historique Administrateur
-                </h3>
-                <span className="text-xs font-black text-ihn-green bg-ihn-green/10 px-3 py-1 rounded-full">
-                  Total : {stats.totalRevenue?.toLocaleString('fr-FR')} FCFA
-                </span>
-              </div>
-
-              {historyLoading ? (
-                <p className="text-xs text-gray-400 py-4 text-center">Chargement des transactions...</p>
-              ) : history.length === 0 ? (
-                <p className="text-xs text-gray-400 py-4 text-center">Aucune transaction enregistrée.</p>
-              ) : (
-                <div className="divide-y divide-gray-100 max-h-60 overflow-y-auto">
-                  {history.map((p) => (
-                    <div key={p._id} className="py-3 flex items-center justify-between text-xs">
-                      <div>
-                        <span className="font-bold text-gray-900">{p.phone}</span>
-                        <span className="text-gray-400 block font-mono text-[10px]">{p.transactionRef}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-black text-ihn-green">{p.amount?.toLocaleString('fr-FR')} FCFA</span>
-                        <span className={`block font-bold text-[10px] uppercase ${
-                          p.provider === 'MTN' ? 'text-yellow-600' : p.provider === 'MOOV' ? 'text-blue-600' : 'text-purple-600'
-                        }`}>
-                          {p.provider}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>

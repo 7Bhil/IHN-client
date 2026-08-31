@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { LogOut, User, Menu, X, Calendar, GraduationCap, ShieldCheck, Home, LayoutDashboard, CreditCard } from 'lucide-react';
+import { User, Menu, X, Calendar, GraduationCap, ShieldCheck, Home, CreditCard } from 'lucide-react';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -61,32 +59,15 @@ const Navbar = () => {
 
           {/* Right Action: Admin Workspace link or Login */}
           <div className="hidden md:flex items-center gap-3">
-            {user && user.role === 'admin' ? (
-              <div className="flex items-center gap-2">
-                <Link
-                  to="/admin/dashboard"
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ihn-dark text-white font-bold text-xs hover:bg-ihn-dark/90 transition-all shadow-md"
-                >
-                  <LayoutDashboard className="w-4 h-4 text-ihn-yellow" />
-                  Espace Administration
-                </Link>
-                <button
-                  onClick={logout}
-                  title="Se déconnecter"
-                  className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <Link
-                to="/login"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ihn-green text-white font-semibold text-sm hover:bg-ihn-green/90 transition-all shadow-md shadow-ihn-green/20 hover:shadow-lg"
-              >
-                <User className="w-4 h-4 text-ihn-yellow" />
-                Accès Admin
-              </Link>
-            )}
+            <a
+              href="https://ihn-admin.pages.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ihn-green text-white font-semibold text-sm hover:bg-ihn-green/90 transition-all shadow-md shadow-ihn-green/20 hover:shadow-lg"
+            >
+              <User className="w-4 h-4 text-ihn-yellow" />
+              Accès Admin
+            </a>
           </div>
 
           {/* Mobile Menu Toggle Button */}
@@ -154,37 +135,16 @@ const Navbar = () => {
 
             {/* Bottom Actions */}
             <div className="pt-6 border-t border-gray-100 space-y-3">
-              {user && user.role === 'admin' ? (
-                <>
-                  <Link
-                    to="/admin/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-ihn-dark text-white font-bold text-sm shadow-md"
-                  >
-                    <LayoutDashboard className="w-4 h-4 text-ihn-yellow" />
-                    Espace Administration
-                  </Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-red-50 text-red-700 font-bold text-xs hover:bg-red-100"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Se déconnecter
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-ihn-green text-white font-bold text-sm shadow-md shadow-ihn-green/20"
-                >
-                  <User className="w-4 h-4 text-ihn-yellow" />
-                  Accès Administration
-                </Link>
-              )}
+              <a
+                href="https://ihn-admin.pages.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-ihn-green text-white font-bold text-sm shadow-md shadow-ihn-green/20"
+              >
+                <User className="w-4 h-4 text-ihn-yellow" />
+                Accès Administration
+              </a>
             </div>
           </div>
         </div>
